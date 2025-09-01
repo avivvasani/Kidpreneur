@@ -2,22 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>REDIRECTING...</title>
+    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-
         :root {
             --primary-color: #007bff;
-            --background-dark: #121212;
+            --background-dark: #000;
             --text-light: #f5f5f5;
-            --card-background: #1e1e1e;
-            --border-color: #333;
+            --card-background: rgba(30, 30, 30, 0.6);
+            --border-color: rgba(60, 60, 60, 0.5);
+            --modal-bg: rgba(0, 0, 0, 0.7);
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-dark);
+            font-family: "SF Pro Display", -apple-system, system-ui, Roboto, sans-serif;
             color: var(--text-light);
             display: flex;
             justify-content: center;
@@ -27,13 +26,38 @@
             text-align: center;
             padding: 20px;
             overflow: hidden;
+            position: relative;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            background-color: var(--background-dark);
+            transition: all 0.5s ease;
+        }
+
+        .bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -3;
+            background: radial-gradient(at 20% 30%, rgba(100, 210, 255, 0.25), transparent 60%),
+                        radial-gradient(at 80% 20%, rgba(255, 79, 165, 0.25), transparent 60%),
+                        radial-gradient(at 50% 80%, rgba(255, 255, 255, 0.25), transparent 60%);
+            animation: pulse 20s infinite ease-in-out;
+            transition: all 0.5s ease;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .container {
             background-color: var(--card-background);
             padding: 40px;
             border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             max-width: 600px;
             width: 100%;
             border: 1px solid var(--border-color);
@@ -41,6 +65,8 @@
             transform: scale(0.95);
             opacity: 0;
             animation: fadeIn 0.8s forwards;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
         }
 
         @keyframes fadeIn {
@@ -50,30 +76,127 @@
             }
         }
 
-        .loader {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 5px solid rgba(255, 255, 255, 0.2);
-            border-top-color: var(--primary-color);
-            animation: spin 1.2s infinite cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         h1 {
-            font-size: 2.2em;
+            font-size: clamp(1.5em, 5vw, 2.2em);
             margin-bottom: 10px;
             font-weight: 700;
         }
 
         p {
-            font-size: 1.1em;
+            font-size: clamp(0.9em, 2vw, 1.1em);
             margin-bottom: 20px;
             color: #ccc;
+        }
+
+        .screen-graphic {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 20px;
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background-color: #000;
+            border-radius: 12px;
+            border: 2px solid #333;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .screen-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: 600;
+            color: var(--primary-color);
+            opacity: 0;
+            transform: scale(0.8);
+            animation: fadeAndScale 1s forwards 1.5s;
+        }
+
+        @keyframes fadeAndScale {
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Device-specific styles */
+        .pc-mode .screen-graphic {
+            border-radius: 8px;
+            border: 2px solid #555;
+            box-shadow: 0 0 20px rgba(255,255,255,0.05);
+        }
+
+        .mobile-mode .screen-graphic {
+            max-width: 250px;
+            padding-top: 150%;
+            border-radius: 30px;
+            border: 2px solid #fff;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+        .mobile-mode .screen-graphic::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            width: 35%;
+            height: 10px;
+            background-color: #000;
+            border-radius: 5px;
+        }
+
+        .tv-mode .screen-graphic {
+            max-width: 500px;
+            border: none;
+            box-shadow: none;
+            padding-top: 56.25%;
+            background-color: transparent;
+        }
+        .tv-mode .screen-graphic::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 2px;
+        }
+        .tv-mode .screen-content {
+            justify-content: flex-end;
+            align-items: center;
+            padding-bottom: 20px;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(0,0,0,0.5);
+            opacity: 1;
+            transform: none;
+            animation: none;
+        }
+        .tv-mode .screen-content svg {
+            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+        }
+
+        .watch-mode .screen-graphic {
+            max-width: 150px;
+            padding-top: 150px;
+            border-radius: 35px;
+            border: 2px solid #888;
+            background-color: #111;
+        }
+
+        .vr-mode .screen-graphic {
+            max-width: 450px;
+            padding-top: 40%;
+            border-radius: 20px;
+            background-color: #000;
+            border: 2px solid #555;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
         }
 
         .progress-bar {
@@ -82,6 +205,7 @@
             background-color: #333;
             border-radius: 5px;
             overflow: hidden;
+            margin-top: 20px;
         }
 
         .progress-bar-fill {
@@ -96,18 +220,125 @@
             margin-top: 20px;
             color: var(--primary-color);
         }
+
+        .manual-redirect {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .manual-redirect h2 {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .manual-redirect select, .manual-redirect button {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: none;
+            font-family: 'SF Pro Display', sans-serif;
+            font-size: 1em;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .manual-redirect select {
+            background-color: #2b2b2b;
+            color: var(--text-light);
+            border: 1px solid #444;
+            margin-right: 10px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23ccc' d='M10 12l-6-6h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px;
+        }
+
+        .manual-redirect button {
+            background-color: var(--primary-color);
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .manual-redirect button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--modal-bg);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-content button {
+            margin-top: 20px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary-color);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
+    <div class="bg"></div>
 
     <div class="container">
-        <div class="loader"></div>
-        <h1>Redirecting you now...</h1>
-        <p>We've detected your device and are redirecting you to the best experience.</p>
+        <div class="screen-graphic">
+            <div class="screen-content" id="screen-info"></div>
+        </div>
+        <h1 id="title-text">REDIRECTING YOU NOW...</h1>
+        <p id="sub-text">WE'VE DETECTED YOUR DEVICE AND ARE REDIRECTING YOU TO THE BEST EXPERIENCE.</p>
         <div class="progress-bar">
             <div class="progress-bar-fill" id="progress-fill"></div>
         </div>
         <p id="device-info"></p>
+
+        <div class="manual-redirect">
+            <h2>OR REDIRECT MANUALLY:</h2>
+            <select id="manual-redirect-select">
+                <option value="pc">PC</option>
+                <option value="mobile">MOBILE</option>
+                <option value="tv">TV</option>
+                <option value="smartwatch">SMART WATCH</option>
+                <option value="smartband">SMART BAND</option>
+                <option value="vr">VR</option>
+            </select>
+            <button id="manual-redirect-button">GO</button>
+        </div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <p id="modal-text"></p>
+            <button onclick="closeModal()">OK</button>
+        </div>
     </div>
 
     <script>
@@ -126,42 +357,115 @@
         const screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
         function getDeviceType() {
-            // Check for PC/Desktop first, as it's the most reliable to detect by user agent.
             if (/Windows|Macintosh|X11|Linux/i.test(userAgent) && !/Mobile|Android|iPhone|iPad|iPod/i.test(userAgent)) {
                 return 'pc';
             }
-            // Check for VR devices
-            else if (/VR|VirtualReality|Oculus|GearVR|Cardboard|Daydream/i.test(userAgent)) {
+            else if (/VR|VirtualReality|Oculus|GearVR|Cardboard|Daydream|Meta Quest|Oculus Quest/i.test(userAgent)) {
                 return 'vr';
             }
-            // Check for Smart Watch devices
             else if (/Watch|GalaxyWatch|AppleWatch/i.test(userAgent) || (screenWidth > 200 && screenWidth <= 400 && screenHeight > 200 && screenHeight <= 400)) {
                 return 'smartwatch';
             }
-            // Check for Smart Band devices
             else if (/Band|MiBand|Fitbit|Wearable/i.test(userAgent) || (screenWidth <= 200 && screenHeight <= 400)) {
                 return 'smartband';
             }
-            // Check for TV
-            else if (/TV|SmartTV|AndroidTV|AppleTV/i.test(userAgent) || (screenWidth > 1200 && screenHeight > 600)) {
+            else if (/TV|SmartTV|AndroidTV|AppleTV|Roku/i.test(userAgent) || (screenWidth > 1200 && screenHeight > 600)) {
                 return 'tv';
             }
-            // Check for Mobile (including tablets)
             else if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
                 return 'mobile';
             }
-            // Default to PC as a final fallback if none of the above match
             else {
                 return 'pc';
             }
         }
 
+        function setDeviceUI(deviceType) {
+            const body = document.body;
+            const screenInfo = document.getElementById('screen-info');
+            const titleText = document.getElementById('title-text');
+            const subText = document.getElementById('sub-text');
+            const deviceName = deviceType.toUpperCase();
+
+            // Clear previous classes and content
+            body.className = '';
+            screenInfo.innerHTML = '';
+            body.classList.add(`${deviceType}-mode`);
+
+            switch(deviceType) {
+                case 'pc':
+                    titleText.textContent = "WELCOME BACK TO YOUR DESKTOP EXPERIENCE";
+                    subText.textContent = "WE'VE DETECTED YOUR PC AND ARE REDIRECTING YOU TO THE BEST EXPERIENCE.";
+                    screenInfo.innerHTML = `
+                        <svg viewBox="0 0 100 100" width="80" height="80">
+                            <path fill="#fff" d="M10,25 h80 v50 h-80 z" stroke="#fff" stroke-width="2" />
+                            <circle cx="50" cy="50" r="40" fill="#fff" />
+                            <text x="50" y="55" font-size="20" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
+                        </svg>
+                    `;
+                    break;
+                case 'mobile':
+                    titleText.textContent = "WELCOME TO THE MOBILE EXPERIENCE";
+                    subText.textContent = "WE'VE DETECTED YOUR MOBILE DEVICE AND ARE REDIRECTING YOU TO THE BEST EXPERIENCE.";
+                    screenInfo.innerHTML = `
+                        <svg viewBox="0 0 100 100" width="80" height="80">
+                            <path fill="#fff" d="M20,10 A5,5 0 0,1 25,5 H75 A5,5 0 0,1 80,10 V90 A5,5 0 0,1 75,95 H25 A5,5 0 0,1 20,90 V10 Z" />
+                            <rect x="25" y="15" width="50" height="70" fill="#1e1e1e" />
+                            <circle cx="50" cy="50" r="20" fill="#fff" />
+                            <text x="50" y="55" font-size="12" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
+                        </svg>
+                    `;
+                    break;
+                case 'tv':
+                    titleText.textContent = "WELCOME TO THE BIG SCREEN";
+                    subText.textContent = "WE'VE DETECTED YOUR TV AND ARE REDIRECTING YOU TO THE BEST VIEWING EXPERIENCE.";
+                    screenInfo.innerHTML = `
+                        <svg viewBox="0 0 100 100" width="100" height="100">
+                            <path fill="#fff" d="M10,25 h80 v50 h-80 z" />
+                            <text x="50" y="55" font-size="12" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
+                        </svg>
+                    `;
+                    break;
+                case 'smartwatch':
+                    titleText.textContent = "GETTING YOU TO YOUR SMART WATCH EXPERIENCE";
+                    subText.textContent = "WE'VE DETECTED YOUR SMARTWATCH AND ARE REDIRECTING YOU FOR EASY ACCESS.";
+                    screenInfo.innerHTML = `
+                        <svg viewBox="0 0 100 100" width="60" height="60">
+                            <rect x="10" y="10" width="80" height="80" rx="20" fill="#fff" />
+                            <text x="50" y="55" font-size="10" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
+                        </svg>
+                    `;
+                    break;
+                case 'smartband':
+                    titleText.textContent = "GETTING YOU TO YOUR SMART BAND EXPERIENCE";
+                    subText.textContent = "WE'VE DETECTED YOUR SMARTBAND AND ARE REDIRECTING YOU FOR A SEAMLESS EXPERIENCE.";
+                    screenInfo.innerHTML = `
+                        <svg viewBox="0 0 100 100" width="60" height="60">
+                            <rect x="25" y="10" width="50" height="80" rx="15" fill="#fff" />
+                            <text x="50" y="55" font-size="10" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
+                        </svg>
+                    `;
+                    break;
+                case 'vr':
+                    titleText.textContent = "WELCOME TO THE VR WORLD";
+                    subText.textContent = "WE'VE DETECTED YOUR VR HEADSET AND ARE REDIRECTING YOU TO THE VIRTUAL REALITY EXPERIENCE.";
+                    screenInfo.innerHTML = `
+                        <svg viewBox="0 0 100 100" width="80" height="80">
+                            <path fill="#fff" d="M10,50 a40,40 0 0,1 80,0 a40,40 0 0,1 -80,0 Z" />
+                            <text x="50" y="55" font-size="12" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
+                        </svg>
+                    `;
+                    break;
+            }
+            
+            document.getElementById('device-info').textContent = `DETECTED DEVICE: ${deviceName}`;
+        }
+
         function startRedirect() {
             const deviceType = getDeviceType();
             const url = redirectUrls[deviceType];
-            const deviceName = deviceType.charAt(0).toUpperCase() + deviceType.slice(1);
             
-            document.getElementById('device-info').textContent = `Detected Device: ${deviceName}`;
+            setDeviceUI(deviceType);
 
             let countdown = 3;
             const progressFill = document.getElementById('progress-fill');
@@ -174,8 +478,7 @@
                     if (url) {
                         window.location.href = url;
                     } else {
-                        document.querySelector('h1').textContent = "Redirection Failed";
-                        document.querySelector('p').textContent = "Could not find a valid URL for your device type. Please contact support.";
+                        openModal("REDIRECTION FAILED. NO URL FOUND FOR THIS DEVICE.");
                         document.getElementById('device-info').style.display = 'none';
                         document.querySelector('.progress-bar').style.display = 'none';
                     }
@@ -183,6 +486,26 @@
                 countdown--;
             }, 1000);
         }
+        
+        function openModal(message) {
+            document.getElementById('modal-text').textContent = message;
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        document.getElementById('manual-redirect-button').addEventListener('click', () => {
+            const selectElement = document.getElementById('manual-redirect-select');
+            const deviceType = selectElement.value;
+            const url = redirectUrls[deviceType];
+            if (url) {
+                window.location.href = url;
+            } else {
+                openModal("REDIRECT URL NOT FOUND FOR SELECTED DEVICE.");
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', startRedirect);
     </script>
