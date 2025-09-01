@@ -3,133 +3,188 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Device Redirector</title>
+    <title>Redirecting...</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+        :root {
+            --primary-color: #007bff;
+            --background-dark: #121212;
+            --text-light: #f5f5f5;
+            --card-background: #1e1e1e;
+            --border-color: #333;
+        }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #0d1117;
-            color: #c9d1d9;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-light);
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
             text-align: center;
-            flex-direction: column;
             padding: 20px;
+            overflow: hidden;
         }
 
         .container {
-            background-color: #161b22;
+            background-color: var(--card-background);
             padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
             max-width: 600px;
             width: 100%;
-            border: 1px solid #30363d;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease-in-out;
+            transform: scale(0.95);
+            opacity: 0;
+            animation: fadeIn 0.8s forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .loader {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 5px solid rgba(255, 255, 255, 0.2);
+            border-top-color: var(--primary-color);
+            animation: spin 1.2s infinite cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         h1 {
-            color: #58a6ff;
-            font-size: 2em;
-            margin-bottom: 20px;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
         }
 
         p {
             font-size: 1.1em;
-            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #ccc;
         }
 
-        #status-message {
-            font-weight: bold;
-            color: #238636;
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #333;
+            border-radius: 5px;
+            overflow: hidden;
         }
 
-        #redirect-button {
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--primary-color);
+            width: 0;
+            transition: width 0.3s linear;
+        }
+
+        #device-info {
+            font-weight: 600;
             margin-top: 20px;
-            background-color: #21262d;
-            color: #c9d1d9;
-            border: 1px solid #30363d;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            color: var(--primary-color);
         }
-
-        #redirect-button:hover {
-            background-color: #30363d;
-        }
-
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Detecting Device</h1>
-        <p>Please wait a moment while we detect your device type and redirect you to the appropriate page.</p>
-        <p id="status-message">Detecting device...</p>
-        <button id="redirect-button" style="display: none;">Click here if you are not redirected automatically</button>
+        <div class="loader"></div>
+        <h1>Redirecting you now...</h1>
+        <p>We've detected your device and are redirecting you to the best experience.</p>
+        <div class="progress-bar">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <p id="device-info"></p>
     </div>
 
     <script>
-        // --- Redirection URLs ---
-        // Change these URLs to your desired destinations
+        // --- Redirection URLs for different device types ---
         const redirectUrls = {
             pc: 'https://avivvasani.github.io/kidpreneur_pc',
             mobile: 'https://avivvasani.github.io/kidpreneur_m',
-            tv: 'https://example.com/tv',
-            watch: 'https://example.com/watch'
+            tv: 'https://avivvasani.github.io/kidpreneur_tv',
+            smartwatch: 'https://avivvasani.github.io/kidpreneur_sw', 
+            smartband: 'https://avivvasani.github.io/kidpreneur_sb',
+            vr: 'https://avivvasani.github.io/kidpreneur_vr'
         };
 
-        // Get the user agent string
-        const userAgent = navigator.userAgent;
-
-        // Get the screen dimensions
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        const screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
         function getDeviceType() {
-            // First, check for watches/smart bands as they have very specific small dimensions
-            // NOTE: This is a heuristic and may not be 100% accurate for all devices
-            if (screenWidth < 400 && screenHeight < 400 && (userAgent.includes('Watch') || userAgent.includes('Wearable'))) {
-                return 'watch';
+            // Check for PC/Desktop first, as it's the most reliable to detect by user agent.
+            if (/Windows|Macintosh|X11|Linux/i.test(userAgent) && !/Mobile|Android|iPhone|iPad|iPod/i.test(userAgent)) {
+                return 'pc';
             }
-            // Check for TV-specific keywords
-            else if (userAgent.includes('TV') || userAgent.includes('SmartTV') || userAgent.includes('AndroidTV') || userAgent.includes('AppleTV')) {
+            // Check for VR devices
+            else if (/VR|VirtualReality|Oculus|GearVR|Cardboard|Daydream/i.test(userAgent)) {
+                return 'vr';
+            }
+            // Check for Smart Watch devices
+            else if (/Watch|GalaxyWatch|AppleWatch/i.test(userAgent) || (screenWidth > 200 && screenWidth <= 400 && screenHeight > 200 && screenHeight <= 400)) {
+                return 'smartwatch';
+            }
+            // Check for Smart Band devices
+            else if (/Band|MiBand|Fitbit|Wearable/i.test(userAgent) || (screenWidth <= 200 && screenHeight <= 400)) {
+                return 'smartband';
+            }
+            // Check for TV
+            else if (/TV|SmartTV|AndroidTV|AppleTV/i.test(userAgent) || (screenWidth > 1200 && screenHeight > 600)) {
                 return 'tv';
             }
-            // Check for common mobile device keywords
-            else if (userAgent.includes('Mobile') || userAgent.includes('Android') || userAgent.includes('iPhone') || userAgent.includes('iPad') || userAgent.includes('iPod')) {
+            // Check for Mobile (including tablets)
+            else if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
                 return 'mobile';
             }
-            // Default to PC/Desktop if none of the above are matched
+            // Default to PC as a final fallback if none of the above match
             else {
                 return 'pc';
             }
         }
 
-        function redirectUser() {
+        function startRedirect() {
             const deviceType = getDeviceType();
             const url = redirectUrls[deviceType];
-            const statusMessage = document.getElementById('status-message');
-            const redirectButton = document.getElementById('redirect-button');
+            const deviceName = deviceType.charAt(0).toUpperCase() + deviceType.slice(1);
             
-            if (url) {
-                statusMessage.textContent = `Redirecting you to the ${deviceType} version...`;
-                redirectButton.onclick = () => window.location.href = url;
-                redirectButton.style.display = 'block';
+            document.getElementById('device-info').textContent = `Detected Device: ${deviceName}`;
 
-                // Automatically redirect after a short delay (e.g., 3 seconds)
-                setTimeout(() => {
-                    window.location.href = url;
-                }, 3000);
-            } else {
-                statusMessage.textContent = 'Could not determine a redirection URL for this device.';
-            }
+            let countdown = 3;
+            const progressFill = document.getElementById('progress-fill');
+            const interval = setInterval(() => {
+                const progress = ((3 - countdown) / 3) * 100;
+                progressFill.style.width = `${progress}%`;
+                
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    if (url) {
+                        window.location.href = url;
+                    } else {
+                        document.querySelector('h1').textContent = "Redirection Failed";
+                        document.querySelector('p').textContent = "Could not find a valid URL for your device type. Please contact support.";
+                        document.getElementById('device-info').style.display = 'none';
+                        document.querySelector('.progress-bar').style.display = 'none';
+                    }
+                }
+                countdown--;
+            }, 1000);
         }
 
-        // Run the detection and redirection logic when the page loads
-        document.addEventListener('DOMContentLoaded', redirectUser);
+        document.addEventListener('DOMContentLoaded', startRedirect);
     </script>
 
 </body>
