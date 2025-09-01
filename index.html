@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Device Redirector</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #161b22;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            border: 1px solid #30363d;
+        }
+
+        h1 {
+            color: #58a6ff;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        #status-message {
+            font-weight: bold;
+            color: #238636;
+        }
+
+        #redirect-button {
+            margin-top: 20px;
+            background-color: #21262d;
+            color: #c9d1d9;
+            border: 1px solid #30363d;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #redirect-button:hover {
+            background-color: #30363d;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Detecting Device</h1>
+        <p>Please wait a moment while we detect your device type and redirect you to the appropriate page.</p>
+        <p id="status-message">Detecting device...</p>
+        <button id="redirect-button" style="display: none;">Click here if you are not redirected automatically</button>
+    </div>
+
+    <script>
+        // --- Redirection URLs ---
+        // Change these URLs to your desired destinations
+        const redirectUrls = {
+            pc: 'https://avivvasani.github.io/kidpreneur_pc',
+            mobile: 'https://avivvasani.github.io/kidpreneur_m',
+            tv: 'https://example.com/tv',
+            watch: 'https://example.com/watch'
+        };
+
+        // Get the user agent string
+        const userAgent = navigator.userAgent;
+
+        // Get the screen dimensions
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+
+        function getDeviceType() {
+            // First, check for watches/smart bands as they have very specific small dimensions
+            // NOTE: This is a heuristic and may not be 100% accurate for all devices
+            if (screenWidth < 400 && screenHeight < 400 && (userAgent.includes('Watch') || userAgent.includes('Wearable'))) {
+                return 'watch';
+            }
+            // Check for TV-specific keywords
+            else if (userAgent.includes('TV') || userAgent.includes('SmartTV') || userAgent.includes('AndroidTV') || userAgent.includes('AppleTV')) {
+                return 'tv';
+            }
+            // Check for common mobile device keywords
+            else if (userAgent.includes('Mobile') || userAgent.includes('Android') || userAgent.includes('iPhone') || userAgent.includes('iPad') || userAgent.includes('iPod')) {
+                return 'mobile';
+            }
+            // Default to PC/Desktop if none of the above are matched
+            else {
+                return 'pc';
+            }
+        }
+
+        function redirectUser() {
+            const deviceType = getDeviceType();
+            const url = redirectUrls[deviceType];
+            const statusMessage = document.getElementById('status-message');
+            const redirectButton = document.getElementById('redirect-button');
+            
+            if (url) {
+                statusMessage.textContent = `Redirecting you to the ${deviceType} version...`;
+                redirectButton.onclick = () => window.location.href = url;
+                redirectButton.style.display = 'block';
+
+                // Automatically redirect after a short delay (e.g., 3 seconds)
+                setTimeout(() => {
+                    window.location.href = url;
+                }, 3000);
+            } else {
+                statusMessage.textContent = 'Could not determine a redirection URL for this device.';
+            }
+        }
+
+        // Run the detection and redirection logic when the page loads
+        document.addEventListener('DOMContentLoaded', redirectUser);
+    </script>
+
+</body>
+</html>
