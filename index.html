@@ -313,25 +313,28 @@
         <div class="screen-graphic">
             <div class="screen-content" id="screen-info"></div>
         </div>
-        <h1 id="title-text">REDIRECTING YOU NOW...</h1>
-        <p id="sub-text">WE'VE DETECTED YOUR DEVICE AND ARE REDIRECTING YOU TO THE BEST EXPERIENCE.</p>
-        <div class="progress-bar">
+        <h1 id="title-text"></h1>
+        <p id="sub-text"></p>
+        <div class="progress-bar" id="progress-bar">
             <div class="progress-bar-fill" id="progress-fill"></div>
         </div>
         <p id="device-info"></p>
 
-        <div class="manual-redirect">
+        <div class="manual-redirect" id="manual-redirect">
             <h2>OR REDIRECT MANUALLY:</h2>
             <select id="manual-redirect-select">
                 <option value="pc">PC</option>
                 <option value="mobile">MOBILE</option>
-                <option value="tv">TV</option>
-                <option value="smartwatch">SMART WATCH</option>
-                <option value="smartband">SMART BAND</option>
-                <option value="vr">VR</option>
             </select>
             <button id="manual-redirect-button">GO</button>
         </div>
+        
+        <p id="unsupported-message" style="display:none; color: #fff; font-size: 1.1em; font-weight: 600;">
+            Sorry, Kidpreneur doesn't have a website dedicated to this device at the moment.
+            <br>
+            You can access it using a PC or a Mobile.
+        </p>
+
     </div>
     
     <div id="modal" class="modal">
@@ -342,14 +345,9 @@
     </div>
 
     <script>
-        // --- Redirection URLs for different device types ---
         const redirectUrls = {
             pc: 'https://avivvasani.github.io/kidpreneur_pc',
-            mobile: 'https://avivvasani.github.io/kidpreneur_m',
-            tv: 'https://avivvasani.github.io/kidpreneur_tv',
-            smartwatch: 'https://avivvasani.github.io/kidpreneur_sw', 
-            smartband: 'https://avivvasani.github.io/kidpreneur_sb',
-            vr: 'https://avivvasani.github.io/kidpreneur_vr'
+            mobile: 'https://avivvasani.github.io/kidpreneur_m'
         };
 
         const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -359,24 +357,10 @@
         function getDeviceType() {
             if (/Windows|Macintosh|X11|Linux/i.test(userAgent) && !/Mobile|Android|iPhone|iPad|iPod/i.test(userAgent)) {
                 return 'pc';
-            }
-            else if (/VR|VirtualReality|Oculus|GearVR|Cardboard|Daydream|Meta Quest|Oculus Quest/i.test(userAgent)) {
-                return 'vr';
-            }
-            else if (/Watch|GalaxyWatch|AppleWatch/i.test(userAgent) || (screenWidth > 200 && screenWidth <= 400 && screenHeight > 200 && screenHeight <= 400)) {
-                return 'smartwatch';
-            }
-            else if (/Band|MiBand|Fitbit|Wearable/i.test(userAgent) || (screenWidth <= 200 && screenHeight <= 400)) {
-                return 'smartband';
-            }
-            else if (/TV|SmartTV|AndroidTV|AppleTV|Roku/i.test(userAgent) || (screenWidth > 1200 && screenHeight > 600)) {
-                return 'tv';
-            }
-            else if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent)) {
+            } else if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) || screenWidth <= 768) {
                 return 'mobile';
-            }
-            else {
-                return 'pc';
+            } else {
+                return 'unsupported';
             }
         }
 
@@ -385,80 +369,58 @@
             const screenInfo = document.getElementById('screen-info');
             const titleText = document.getElementById('title-text');
             const subText = document.getElementById('sub-text');
-            const deviceName = deviceType.toUpperCase();
-
-            // Clear previous classes and content
+            const deviceInfo = document.getElementById('device-info');
+            const progressBar = document.getElementById('progress-bar');
+            const manualRedirect = document.getElementById('manual-redirect');
+            const unsupportedMessage = document.getElementById('unsupported-message');
+            
             body.className = '';
             screenInfo.innerHTML = '';
-            body.classList.add(`${deviceType}-mode`);
+            
+            if (deviceType === 'pc' || deviceType === 'mobile') {
+                body.classList.add(`${deviceType}-mode`);
+                titleText.textContent = deviceType === 'pc' ? "WELCOME BACK TO YOUR DESKTOP EXPERIENCE" : "WELCOME TO THE MOBILE EXPERIENCE";
+                subText.textContent = "WE'VE DETECTED YOUR DEVICE AND ARE REDIRECTING YOU TO THE BEST EXPERIENCE.";
+                deviceInfo.textContent = `DETECTED DEVICE: ${deviceType.toUpperCase()}`;
+                progressBar.style.display = 'block';
+                manualRedirect.style.display = 'block';
+                unsupportedMessage.style.display = 'none';
 
-            switch(deviceType) {
-                case 'pc':
-                    titleText.textContent = "WELCOME BACK TO YOUR DESKTOP EXPERIENCE";
-                    subText.textContent = "WE'VE DETECTED YOUR PC AND ARE REDIRECTING YOU TO THE BEST EXPERIENCE.";
+                if (deviceType === 'pc') {
                     screenInfo.innerHTML = `
                         <svg viewBox="0 0 100 100" width="80" height="80">
                             <path fill="#fff" d="M10,25 h80 v50 h-80 z" stroke="#fff" stroke-width="2" />
                             <circle cx="50" cy="50" r="40" fill="#fff" />
-                            <text x="50" y="55" font-size="20" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
+                            <text x="50" y="55" font-size="20" fill="#000" text-anchor="middle" font-weight="bold">PC</text>
                         </svg>
                     `;
-                    break;
-                case 'mobile':
-                    titleText.textContent = "WELCOME TO THE MOBILE EXPERIENCE";
-                    subText.textContent = "WE'VE DETECTED YOUR MOBILE DEVICE AND ARE REDIRECTING YOU TO THE BEST EXPERIENCE.";
-                    screenInfo.innerHTML = `
+                } else {
+                     screenInfo.innerHTML = `
                         <svg viewBox="0 0 100 100" width="80" height="80">
                             <path fill="#fff" d="M20,10 A5,5 0 0,1 25,5 H75 A5,5 0 0,1 80,10 V90 A5,5 0 0,1 75,95 H25 A5,5 0 0,1 20,90 V10 Z" />
                             <rect x="25" y="15" width="50" height="70" fill="#1e1e1e" />
                             <circle cx="50" cy="50" r="20" fill="#fff" />
-                            <text x="50" y="55" font-size="12" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
+                            <text x="50" y="55" font-size="12" fill="#000" text-anchor="middle" font-weight="bold">MOBILE</text>
                         </svg>
                     `;
-                    break;
-                case 'tv':
-                    titleText.textContent = "WELCOME TO THE BIG SCREEN";
-                    subText.textContent = "WE'VE DETECTED YOUR TV AND ARE REDIRECTING YOU TO THE BEST VIEWING EXPERIENCE.";
-                    screenInfo.innerHTML = `
-                        <svg viewBox="0 0 100 100" width="100" height="100">
-                            <path fill="#fff" d="M10,25 h80 v50 h-80 z" />
-                            <text x="50" y="55" font-size="12" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
-                        </svg>
-                    `;
-                    break;
-                case 'smartwatch':
-                    titleText.textContent = "GETTING YOU TO YOUR SMART WATCH EXPERIENCE";
-                    subText.textContent = "WE'VE DETECTED YOUR SMARTWATCH AND ARE REDIRECTING YOU FOR EASY ACCESS.";
-                    screenInfo.innerHTML = `
-                        <svg viewBox="0 0 100 100" width="60" height="60">
-                            <rect x="10" y="10" width="80" height="80" rx="20" fill="#fff" />
-                            <text x="50" y="55" font-size="10" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
-                        </svg>
-                    `;
-                    break;
-                case 'smartband':
-                    titleText.textContent = "GETTING YOU TO YOUR SMART BAND EXPERIENCE";
-                    subText.textContent = "WE'VE DETECTED YOUR SMARTBAND AND ARE REDIRECTING YOU FOR A SEAMLESS EXPERIENCE.";
-                    screenInfo.innerHTML = `
-                        <svg viewBox="0 0 100 100" width="60" height="60">
-                            <rect x="25" y="10" width="50" height="80" rx="15" fill="#fff" />
-                            <text x="50" y="55" font-size="10" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
-                        </svg>
-                    `;
-                    break;
-                case 'vr':
-                    titleText.textContent = "WELCOME TO THE VR WORLD";
-                    subText.textContent = "WE'VE DETECTED YOUR VR HEADSET AND ARE REDIRECTING YOU TO THE VIRTUAL REALITY EXPERIENCE.";
-                    screenInfo.innerHTML = `
+                }
+
+            } else {
+                body.classList.add(`unsupported-mode`); // You can add custom styles for this mode if needed
+                titleText.textContent = "UNSUPPORTED DEVICE";
+                subText.textContent = "PLEASE USE A PC OR MOBILE DEVICE.";
+                unsupportedMessage.style.display = 'block';
+                progressBar.style.display = 'none';
+                manualRedirect.style.display = 'none';
+                deviceInfo.style.display = 'none';
+                screenInfo.innerHTML = `
                         <svg viewBox="0 0 100 100" width="80" height="80">
-                            <path fill="#fff" d="M10,50 a40,40 0 0,1 80,0 a40,40 0 0,1 -80,0 Z" />
-                            <text x="50" y="55" font-size="12" fill="#000" text-anchor="middle" font-weight="bold">${deviceName}</text>
+                            <circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="none" />
+                            <line x1="20" y1="20" x2="80" y2="80" stroke="white" stroke-width="2" />
+                            <line x1="20" y1="80" x2="80" y2="20" stroke="white" stroke-width="2" />
                         </svg>
-                    `;
-                    break;
+                `;
             }
-            
-            document.getElementById('device-info').textContent = `DETECTED DEVICE: ${deviceName}`;
         }
 
         function startRedirect() {
@@ -467,24 +429,26 @@
             
             setDeviceUI(deviceType);
 
-            let countdown = 3;
-            const progressFill = document.getElementById('progress-fill');
-            const interval = setInterval(() => {
-                const progress = ((3 - countdown) / 3) * 100;
-                progressFill.style.width = `${progress}%`;
-                
-                if (countdown <= 0) {
-                    clearInterval(interval);
-                    if (url) {
-                        window.location.href = url;
-                    } else {
-                        openModal("REDIRECTION FAILED. NO URL FOUND FOR THIS DEVICE.");
-                        document.getElementById('device-info').style.display = 'none';
-                        document.querySelector('.progress-bar').style.display = 'none';
+            if (deviceType === 'pc' || deviceType === 'mobile') {
+                let countdown = 3;
+                const progressFill = document.getElementById('progress-fill');
+                const interval = setInterval(() => {
+                    const progress = ((3 - countdown) / 3) * 100;
+                    progressFill.style.width = `${progress}%`;
+                    
+                    if (countdown <= 0) {
+                        clearInterval(interval);
+                        if (url) {
+                            window.location.href = url;
+                        } else {
+                            openModal("REDIRECTION FAILED. NO URL FOUND FOR THIS DEVICE.");
+                            document.getElementById('device-info').style.display = 'none';
+                            document.querySelector('.progress-bar').style.display = 'none';
+                        }
                     }
-                }
-                countdown--;
-            }, 1000);
+                    countdown--;
+                }, 1000);
+            }
         }
         
         function openModal(message) {
@@ -509,6 +473,5 @@
 
         document.addEventListener('DOMContentLoaded', startRedirect);
     </script>
-
 </body>
 </html>
