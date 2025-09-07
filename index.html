@@ -1,324 +1,201 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>REDIRECTING...</title>
-    <link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #007bff;
-            --background-dark: #000;
-            --text-light: #f5f5f5;
-            --card-background: rgba(30, 30, 30, 0.6);
-            --border-color: rgba(60, 60, 60, 0.5);
-            --modal-bg: rgba(0, 0, 0, 0.7);
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Kidpreneur · CodeAGS</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect rx='5' width='24' height='24' fill='%230a84ff'/%3E%3Ctext x='50%' y='55%' font-size='10' text-anchor='middle' fill='white' font-family='-apple-system, BlinkMacSystemFont, Roboto'%3EKP%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  /* ---------- Design tokens (dark macOS aesthetic) ---------- */
+  :root{
+    --bg-900:#0b0b0c;
+    --bg-800:#0f1113;
+    --glass-1: rgba(255,255,255,0.04);
+    --glass-2: rgba(255,255,255,0.03);
+    --glass-3: rgba(255,255,255,0.02);
+    --accent: #0a84ff;
+    --accent-2: #64d2ff;
+    --muted: #8e8e93;
+    --text: #efeff4;
+    --radius: 16px;
+    --card-shadow: 0 18px 48px rgba(2,6,23,0.6);
+    --soft-shadow: 0 6px 22px rgba(2,6,23,0.45);
+    --glass-border: rgba(255,255,255,0.03);
+  }
 
-        body {
-            font-family: "SF Pro Display", -apple-system, system-ui, Roboto, sans-serif;
-            color: var(--text-light);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            text-align: center;
-            padding: 20px;
-            overflow: hidden;
-            position: relative;
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-            background-color: var(--background-dark);
-            transition: all 0.5s ease;
-        }
+  /* ---------- Reset ---------- */
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text","Segoe UI",Roboto, "Helvetica Neue", Arial;color:var(--text);background:linear-gradient(180deg,var(--bg-900),var(--bg-800));-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  button{font-family:inherit}
+  .desktop{
+    padding:80px 48px 120px;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align: center;
+  }
+  .app{
+    width:1200px;
+    max-width:calc(100% - 96px);
+    border-radius:20px;
+    overflow:hidden;
+    background: linear-gradient(180deg, rgba(20,20,21,0.68), rgba(12,12,13,0.66));
+    border:1px solid var(--glass-border);
+    box-shadow: var(--card-shadow);
+    backdrop-filter: blur(20px) saturate(160%);
+    transform-origin:center;
+    animation: popIn 600ms cubic-bezier(.2,.9,.25,1);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  @keyframes popIn{from{opacity:0;transform:translateY(30px) scale(.995)}to{opacity:1;transform:translateY(0) scale(1)}}
 
-        .bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -3;
-            background: radial-gradient(at 20% 30%, rgba(100, 210, 255, 0.25), transparent 60%),
-                        radial-gradient(at 80% 20%, rgba(255, 79, 165, 0.25), transparent 60%),
-                        radial-gradient(at 50% 80%, rgba(255, 255, 255, 0.25), transparent 60%);
-            animation: pulse 20s infinite ease-in-out;
-            transition: all 0.5s ease;
-        }
+  h1.headline {
+    margin: 0 0 10px;
+    font-size: 56px;
+    line-height: 1;
+    font-weight: 800;
+    background: linear-gradient(90deg,var(--text), rgba(240,240,245,0.6));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.6));
+    letter-spacing: -1px;
+  }
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
+  p.subtitle {
+    color: var(--muted);
+    font-size: 18px;
+    max-width: 64ch;
+    margin-bottom: 22px;
+  }
 
-        .container {
-            background-color: var(--card-background);
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            max-width: 600px;
-            width: 100%;
-            border: 1px solid var(--border-color);
-            transition: all 0.3s ease-in-out;
-            transform: scale(0.95);
-            opacity: 0;
-            animation: fadeIn 0.8s forwards;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
+  #unsupported-message {
+    color: var(--text);
+    font-size: 1.1em;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-top: 20px;
+  }
 
-        @keyframes fadeIn {
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
+  .progress-bar {
+    width: 80%;
+    max-width: 400px;
+    height: 10px;
+    background-color: var(--glass-2);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
 
-        h1 {
-            font-size: clamp(1.5em, 5vw, 2.2em);
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
+  .progress-bar-fill {
+    height: 100%;
+    background-color: var(--accent);
+    width: 0;
+    transition: width 0.3s linear;
+  }
 
-        p {
-            font-size: clamp(0.9em, 2vw, 1.1em);
-            margin-bottom: 20px;
-            color: #ccc;
-        }
+  .manual-redirect {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid var(--glass-border);
+  }
 
-        .screen-graphic {
-            width: 100%;
-            max-width: 400px;
-            margin: 0 auto 20px;
-            position: relative;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            background-color: #000;
-            border-radius: 12px;
-            border: 2px solid #333;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-        }
+  .manual-redirect h2 {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
 
-        .screen-content {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            font-size: 1.5em;
-            font-weight: 600;
-            color: var(--primary-color);
-            opacity: 0;
-            transform: scale(0.8);
-            animation: fadeAndScale 1s forwards 1.5s;
-        }
+  .manual-redirect select, .manual-redirect button {
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'SF Pro Display', sans-serif;
+    font-size: 1em;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease-in-out;
+  }
 
-        @keyframes fadeAndScale {
-            to { opacity: 1; transform: scale(1); }
-        }
-        
-        /* Device-specific styles */
-        .pc-mode .screen-graphic {
-            border-radius: 8px;
-            border: 2px solid #555;
-            box-shadow: 0 0 20px rgba(255,255,255,0.05);
-        }
+  .manual-redirect select {
+    background-color: #2b2b2b;
+    color: var(--text);
+    border: 1px solid #444;
+    margin-right: 10px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23ccc' d='M10 12l-6-6h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 30px;
+  }
 
-        .mobile-mode .screen-graphic {
-            max-width: 250px;
-            padding-top: 150%;
-            border-radius: 30px;
-            border: 2px solid #fff;
-            box-shadow: 0 0 20px rgba(0,0,0,0.2);
-        }
-        .mobile-mode .screen-graphic::before {
-            content: '';
-            position: absolute;
-            top: 10px;
-            width: 35%;
-            height: 10px;
-            background-color: #000;
-            border-radius: 5px;
-        }
+  .manual-redirect button {
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    color: #061424;
+    border: none;
+    box-shadow:0 18px 40px rgba(10,132,255,0.28);
+    font-weight: 700;
+  }
 
-        .tv-mode .screen-graphic {
-            max-width: 500px;
-            border: none;
-            box-shadow: none;
-            padding-top: 56.25%;
-            background-color: transparent;
-        }
-        .tv-mode .screen-graphic::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 2px;
-        }
-        .tv-mode .screen-content {
-            justify-content: flex-end;
-            align-items: center;
-            padding-bottom: 20px;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
-            opacity: 1;
-            transform: none;
-            animation: none;
-        }
-        .tv-mode .screen-content svg {
-            filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
-        }
+  .manual-redirect button:hover {
+    transform: translateY(-2px);
+    box-shadow:0 22px 50px rgba(10,132,255,0.38);
+  }
 
-        .watch-mode .screen-graphic {
-            max-width: 150px;
-            padding-top: 150px;
-            border-radius: 35px;
-            border: 2px solid #888;
-            background-color: #111;
-        }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    align-items: center;
+    justify-content: center;
+  }
 
-        .vr-mode .screen-graphic {
-            max-width: 450px;
-            padding-top: 40%;
-            border-radius: 20px;
-            background-color: #000;
-            border: 2px solid #555;
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
-        }
+  .modal-content {
+    background: linear-gradient(180deg, rgba(20,20,21,0.68), rgba(12,12,13,0.66));
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    text-align: center;
+    border: 1px solid var(--glass-border);
+  }
 
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background-color: #333;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-top: 20px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background-color: var(--primary-color);
-            width: 0;
-            transition: width 0.3s linear;
-        }
-
-        #device-info {
-            font-weight: 600;
-            margin-top: 20px;
-            color: var(--primary-color);
-        }
-
-        .manual-redirect {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .manual-redirect h2 {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            font-weight: 600;
-            color: #fff;
-        }
-
-        .manual-redirect select, .manual-redirect button {
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: none;
-            font-family: 'SF Pro Display', sans-serif;
-            font-size: 1em;
-            cursor: pointer;
-            outline: none;
-            transition: all 0.2s ease-in-out;
-        }
-
-        .manual-redirect select {
-            background-color: #2b2b2b;
-            color: var(--text-light);
-            border: 1px solid #444;
-            margin-right: 10px;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23ccc' d='M10 12l-6-6h12z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            padding-right: 30px;
-        }
-
-        .manual-redirect button {
-            background-color: var(--primary-color);
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .manual-redirect button:hover {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 100;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--modal-bg);
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: var(--card-background);
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-            text-align: center;
-            border: 1px solid var(--border-color);
-        }
-
-        .modal-content button {
-            margin-top: 20px;
-            padding: 10px 25px;
-            border: none;
-            border-radius: 8px;
-            background-color: var(--primary-color);
-            color: #fff;
-            cursor: pointer;
-            font-weight: 600;
-        }
-    </style>
+  .modal-content button {
+    margin-top: 20px;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 8px;
+    background-color: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+  }
+</style>
 </head>
 <body>
-    <div class="bg"></div>
+<div class="desktop">
+    <div class="app">
+        <h1 class="headline" id="title-text"></h1>
+        <p class="subtitle" id="sub-text"></p>
+        <p id="device-info"></p>
 
-    <div class="container">
-        <div class="screen-graphic">
-            <div class="screen-content" id="screen-info"></div>
-        </div>
-        <h1 id="title-text"></h1>
-        <p id="sub-text"></p>
         <div class="progress-bar" id="progress-bar">
             <div class="progress-bar-fill" id="progress-fill"></div>
         </div>
-        <p id="device-info"></p>
 
         <div class="manual-redirect" id="manual-redirect">
             <h2>OR REDIRECT MANUALLY:</h2>
@@ -328,150 +205,116 @@
             </select>
             <button id="manual-redirect-button">GO</button>
         </div>
-        
-        <p id="unsupported-message" style="display:none; color: #fff; font-size: 1.1em; font-weight: 600;">
+
+        <p id="unsupported-message" style="display:none;">
             Sorry, Kidpreneur doesn't have a website dedicated to this device at the moment.
             <br>
             You can access it using a PC or a Mobile.
         </p>
-
     </div>
-    
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <p id="modal-text"></p>
-            <button onclick="closeModal()">OK</button>
-        </div>
+</div>
+
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <p id="modal-text"></p>
+        <button onclick="closeModal()">OK</button>
     </div>
+</div>
 
-    <script>
-        const redirectUrls = {
-            pc: 'https://avivvasani.github.io/kidpreneur_pc',
-            mobile: 'https://avivvasani.github.io/kidpreneur_m'
-        };
+<script>
+    const redirectUrls = {
+        pc: 'https://avivvasani.github.io/kidpreneur_pc',
+        mobile: 'https://avivvasani.github.io/kidpreneur_m'
+    };
 
-        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-        const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        const screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
 
-        function getDeviceType() {
-            if (/Windows|Macintosh|X11|Linux/i.test(userAgent) && !/Mobile|Android|iPhone|iPad|iPod/i.test(userAgent)) {
-                return 'pc';
-            } else if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) || screenWidth <= 768) {
-                return 'mobile';
-            } else {
-                return 'unsupported';
-            }
+    function getDeviceType() {
+        if (/Windows|Macintosh|X11|Linux/i.test(userAgent) && !/Mobile|Android|iPhone|iPad|iPod/i.test(userAgent)) {
+            return 'pc';
+        } else if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent) || screenWidth <= 768) {
+            return 'mobile';
+        } else {
+            return 'unsupported';
         }
+    }
 
-        function setDeviceUI(deviceType) {
-            const body = document.body;
-            const screenInfo = document.getElementById('screen-info');
-            const titleText = document.getElementById('title-text');
-            const subText = document.getElementById('sub-text');
-            const deviceInfo = document.getElementById('device-info');
-            const progressBar = document.getElementById('progress-bar');
-            const manualRedirect = document.getElementById('manual-redirect');
-            const unsupportedMessage = document.getElementById('unsupported-message');
-            
-            body.className = '';
-            screenInfo.innerHTML = '';
-            
-            if (deviceType === 'pc' || deviceType === 'mobile') {
-                body.classList.add(`${deviceType}-mode`);
-                titleText.textContent = deviceType === 'pc' ? "WELCOME BACK TO YOUR DESKTOP EXPERIENCE" : "WELCOME TO THE MOBILE EXPERIENCE";
-                subText.textContent = "WE'VE DETECTED YOUR DEVICE AND ARE REDIRECTING YOU TO THE BEST EXPERIENCE.";
-                deviceInfo.textContent = `DETECTED DEVICE: ${deviceType.toUpperCase()}`;
-                progressBar.style.display = 'block';
-                manualRedirect.style.display = 'block';
-                unsupportedMessage.style.display = 'none';
+    function setDeviceUI(deviceType) {
+        const titleText = document.getElementById('title-text');
+        const subText = document.getElementById('sub-text');
+        const deviceInfo = document.getElementById('device-info');
+        const progressBar = document.getElementById('progress-bar');
+        const manualRedirect = document.getElementById('manual-redirect');
+        const unsupportedMessage = document.getElementById('unsupported-message');
 
-                if (deviceType === 'pc') {
-                    screenInfo.innerHTML = `
-                        <svg viewBox="0 0 100 100" width="80" height="80">
-                            <path fill="#fff" d="M10,25 h80 v50 h-80 z" stroke="#fff" stroke-width="2" />
-                            <circle cx="50" cy="50" r="40" fill="#fff" />
-                            <text x="50" y="55" font-size="20" fill="#000" text-anchor="middle" font-weight="bold">PC</text>
-                        </svg>
-                    `;
-                } else {
-                     screenInfo.innerHTML = `
-                        <svg viewBox="0 0 100 100" width="80" height="80">
-                            <path fill="#fff" d="M20,10 A5,5 0 0,1 25,5 H75 A5,5 0 0,1 80,10 V90 A5,5 0 0,1 75,95 H25 A5,5 0 0,1 20,90 V10 Z" />
-                            <rect x="25" y="15" width="50" height="70" fill="#1e1e1e" />
-                            <circle cx="50" cy="50" r="20" fill="#fff" />
-                            <text x="50" y="55" font-size="12" fill="#000" text-anchor="middle" font-weight="bold">MOBILE</text>
-                        </svg>
-                    `;
-                }
-
-            } else {
-                body.classList.add(`unsupported-mode`); // You can add custom styles for this mode if needed
-                titleText.textContent = "UNSUPPORTED DEVICE";
-                subText.textContent = "PLEASE USE A PC OR MOBILE DEVICE.";
-                unsupportedMessage.style.display = 'block';
-                progressBar.style.display = 'none';
-                manualRedirect.style.display = 'none';
-                deviceInfo.style.display = 'none';
-                screenInfo.innerHTML = `
-                        <svg viewBox="0 0 100 100" width="80" height="80">
-                            <circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="none" />
-                            <line x1="20" y1="20" x2="80" y2="80" stroke="white" stroke-width="2" />
-                            <line x1="20" y1="80" x2="80" y2="20" stroke="white" stroke-width="2" />
-                        </svg>
-                `;
-            }
+        if (deviceType === 'pc' || deviceType === 'mobile') {
+            titleText.textContent = deviceType === 'pc' ? "WELCOME BACK TO YOUR DESKTOP EXPERIENCE" : "WELCOME TO THE MOBILE EXPERIENCE";
+            subText.textContent = "WE'VE DETECTED YOUR DEVICE AND ARE REDIRECTING YOU TO THE BEST EXPERIENCE.";
+            deviceInfo.textContent = `DETECTED DEVICE: ${deviceType.toUpperCase()}`;
+            progressBar.style.display = 'block';
+            manualRedirect.style.display = 'block';
+            unsupportedMessage.style.display = 'none';
+            deviceInfo.style.display = 'block';
+        } else {
+            titleText.textContent = "UNSUPPORTED DEVICE";
+            subText.textContent = "PLEASE USE A PC OR MOBILE DEVICE.";
+            unsupportedMessage.style.display = 'block';
+            progressBar.style.display = 'none';
+            manualRedirect.style.display = 'none';
+            deviceInfo.style.display = 'none';
         }
+    }
 
-        function startRedirect() {
-            const deviceType = getDeviceType();
-            const url = redirectUrls[deviceType];
-            
-            setDeviceUI(deviceType);
+    function startRedirect() {
+        const deviceType = getDeviceType();
+        const url = redirectUrls[deviceType];
 
-            if (deviceType === 'pc' || deviceType === 'mobile') {
-                let countdown = 3;
-                const progressFill = document.getElementById('progress-fill');
-                const interval = setInterval(() => {
-                    const progress = ((3 - countdown) / 3) * 100;
-                    progressFill.style.width = `${progress}%`;
-                    
-                    if (countdown <= 0) {
-                        clearInterval(interval);
-                        if (url) {
-                            window.location.href = url;
-                        } else {
-                            openModal("REDIRECTION FAILED. NO URL FOUND FOR THIS DEVICE.");
-                            document.getElementById('device-info').style.display = 'none';
-                            document.querySelector('.progress-bar').style.display = 'none';
-                        }
+        setDeviceUI(deviceType);
+
+        if (deviceType === 'pc' || deviceType === 'mobile') {
+            let countdown = 3;
+            const progressFill = document.getElementById('progress-fill');
+            const interval = setInterval(() => {
+                const progress = ((3 - countdown) / 3) * 100;
+                progressFill.style.width = `${progress}%`;
+
+                if (countdown <= 0) {
+                    clearInterval(interval);
+                    if (url) {
+                        window.location.href = url;
+                    } else {
+                        openModal("REDIRECTION FAILED. NO URL FOUND FOR THIS DEVICE.");
+                        document.getElementById('device-info').style.display = 'none';
+                        document.querySelector('.progress-bar').style.display = 'none';
                     }
-                    countdown--;
-                }, 1000);
-            }
+                }
+                countdown--;
+            }, 1000);
         }
-        
-        function openModal(message) {
-            document.getElementById('modal-text').textContent = message;
-            document.getElementById('modal').style.display = 'flex';
+    }
+
+    function openModal(message) {
+        document.getElementById('modal-text').textContent = message;
+        document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('modal').style.display = 'none';
+    }
+
+    document.getElementById('manual-redirect-button').addEventListener('click', () => {
+        const selectElement = document.getElementById('manual-redirect-select');
+        const deviceType = selectElement.value;
+        const url = redirectUrls[deviceType];
+        if (url) {
+            window.location.href = url;
+        } else {
+            openModal("REDIRECT URL NOT FOUND FOR SELECTED DEVICE.");
         }
+    });
 
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
-
-        document.getElementById('manual-redirect-button').addEventListener('click', () => {
-            const selectElement = document.getElementById('manual-redirect-select');
-            const deviceType = selectElement.value;
-            const url = redirectUrls[deviceType];
-            if (url) {
-                window.location.href = url;
-            } else {
-                openModal("REDIRECT URL NOT FOUND FOR SELECTED DEVICE.");
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', startRedirect);
-    </script>
+    document.addEventListener('DOMContentLoaded', startRedirect);
+</script>
 </body>
 </html>
