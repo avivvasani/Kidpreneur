@@ -1,0 +1,99 @@
+Making a Local Server Accessible from the Internet
+Step 1: Find Your Computer's Local IP Address
+
+First, you need to find the local IP address of the computer where your server is running. This is the address your router uses to send traffic to the correct device on your home network.
+
+    
+    Windows (Command Prompt):
+
+        Open the Start Menu and type cmd.
+
+        In the Command Prompt, type ipconfig.
+
+        Look for "IPv4 Address." The value, like 192.168.1.10, is your local IP.
+
+   
+    macOS (Terminal):
+
+        Open Spotlight Search (Cmd + Space) and type Terminal.
+
+        In the Terminal, type ifconfig or ip addr.
+
+        Look for inet under your active network interface (e.g., en0 or en1). The value, like 192.168.1.10, is your local IP.
+
+    
+    Linux (Terminal):
+
+        Open your Terminal.
+
+        Type ip addr or ifconfig.
+
+        Find your active network interface (e.g., eth0, wlan0). The IP address listed, like 192.168.1.10, is your local IP.
+
+
+Step 2: Configure Your Firewall
+
+Your operating system's firewall blocks incoming connections by default to keep you safe. You need to create an exception to allow connections on port 9090.
+
+   
+    Windows (Settings App)
+
+        Open the Start Menu and type Windows Defender Firewall.
+
+        On the left, click Advanced settings.
+
+        In the new window, click on Inbound Rules in the left sidebar.
+
+        Click New Rule... in the right sidebar and follow the wizard:
+
+            Choose Port and click Next.
+
+            Select TCP and enter 9090 in the "Specific local ports" field.
+
+            Choose Allow the connection.
+
+            Select all profiles (Domain, Private, Public) and click Next.
+
+            Give the rule a name, like "Java Server (Port 9090)," and click Finish.
+
+   
+    Linux (Terminal)
+
+        Using ufw (Ubuntu, Debian, etc.):
+
+            Run the command: sudo ufw allow 9090/tcp.
+
+            Run sudo ufw enable if the firewall is not active.
+
+        Using firewalld (CentOS, Fedora, etc.):
+
+            Run the command: sudo firewall-cmd --permanent --add-port=9090/tcp.
+
+            Run sudo firewall-cmd --reload to apply the changes.
+
+
+Step 3: Configure Port Forwarding on Your Router
+
+This is the most crucial step. You need to tell your router to forward traffic from the internet on port 9090 to your computer's local IP address.
+
+    General Steps (Router interfaces vary):
+
+        Open a web browser and type your router's default gateway IP address (often 192.168.1.1 or 192.168.0.1).
+
+        Log in with your router's administrator username and password.
+
+        Find a section named Port Forwarding, Virtual Server, or NAT.
+
+        Create a new rule:
+
+            Service Port/External Port: Enter 9090.
+
+            Internal Port: Enter 9090.
+
+            Internal IP Address: Enter the local IP address you found in Step 1 (e.g., 192.168.1.10).
+
+            Protocol: Select TCP.
+
+            Give the rule a name like "Java Server".
+
+        Save the settings and restart your router if it asks you to.
