@@ -16,7 +16,7 @@ public class IdeaServer {
     public static void main(String[] args) throws Exception {
         int port;
         try (Scanner scanner = new Scanner(System.in)) {
-            System.out.print("Please enter the port number for the server: ");
+            System.out.print("Please enter the port number for the server (Default - 9090): ");
             String portInput = scanner.nextLine();
             port = Integer.parseInt(portInput);
         } catch (NumberFormatException e) {
